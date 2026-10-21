@@ -83,6 +83,20 @@ if len(sys.argv) > 3:
     place(canvas, opened, edge + closed.width + gap, edge)
     canvas.save(out / "settings.png", optimize=True)
 
+    # 5. The menu bar: one reading by default, two, three. Each on a bar of its own,
+    # right-aligned as status items are, the bars as wide as the widest item needs.
+    items = [Image.open(render / f"menubar-readme-{n}.png").convert("RGBA") for n in (1, 2, 3)]
+    pad, gap, edge = 28, 36, 80
+    bar_width = max(item.width for item in items) + pad * 2
+    bar_height = items[0].height
+    canvas = wallpaper(bar_width + edge * 2, bar_height * 3 + gap * 2 + edge * 2)
+    RADIUS = 14
+    for row, item in enumerate(items):
+        bar = Image.new("RGBA", (bar_width, bar_height), (0, 0, 0, 0))
+        bar.paste(item, (bar_width - pad - item.width, 0), item)
+        place(canvas, bar, edge, edge + row * (bar_height + gap))
+    canvas.save(out / "menubar.png", optimize=True)
+
 # 4. The panel through a few seconds, when the frames directory holds a loop.
 loop = sorted(frames.glob("660x230-*.png"))
 if len(loop) > 1:

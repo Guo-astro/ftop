@@ -362,5 +362,12 @@ private let demoFrameCount = ProcessInfo.processInfo.environment["FTOP_DEMO_FRAM
         }
         let image = try #require(context.makeImage())
         try NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])!.write(to: directory.appending(path: "menubar.png"))
+        // For the README: one reading, as by default, then two and three, white on nothing, to be set on a dark bar.
+        for (index, group) in [[pairs[0]], pairs, trio].enumerated() {
+            let entries = group.map { MenuBarPicture.Entry($0.0, figure: $0.1, room: MenuBarPicture.figureWidth($0.1)) }
+            let picture = try #require(MenuBarPicture.picture(entries, height: height, scale: scale, color: CGColor(gray: 1, alpha: 1)))
+            try NSBitmapImageRep(cgImage: picture).representation(using: .png, properties: [:])!
+                .write(to: directory.appending(path: "menubar-readme-\(index + 1).png"))
+        }
     }
 }

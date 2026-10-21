@@ -20,9 +20,10 @@ It shows the current state only: no history graphs, no disk panels.
 
 ## One panel, every size
 
-Drag any edge. ftop picks the layout that fits and the window settles onto it, so
-nothing is ever clipped and no space is left empty. A small window keeps the
-essentials; a large one shows more, not bigger type.
+Drag any edge or corner; the pointer turns into the resize cursor as soon as it is
+near one. ftop picks the layout that fits and the window settles onto it, so nothing is
+ever clipped and no space is left empty. A small window keeps the essentials; a large
+one shows more, not bigger type.
 
 ![The same panel at six sizes](docs/media/sizes.png)
 
@@ -62,9 +63,17 @@ A reading the hardware does not give is shown as unavailable, never as zero.
 
 With *Reduce Motion* on in macOS, all of this becomes plain fades.
 
+## Menu bar
+
+The menu bar shows CPU by default, as a glyph and its number. Up to three readings can
+sit there side by side: CPU, memory, GPU, download, upload, or power. Click it to show
+or hide the panel.
+
+<p align="center"><img src="docs/media/menubar.png" width="264" alt="The menu bar with one reading, two, and three: CPU, then memory, then GPU"></p>
+
 ## Settings
 
-Right-click the panel or the menu bar number. One block holds everything: what to
+Right-click the panel or the menu bar item. One block holds everything: what to
 show, how the panel behaves, the colors, and under **More** the few settings that have
 a value.
 
