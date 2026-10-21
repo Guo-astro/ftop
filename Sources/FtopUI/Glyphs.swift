@@ -29,7 +29,7 @@ enum GlyphArt {
         var size: CGFloat
     }
 
-    private static var masks: [Key: (image: CGImage, size: CGSize)] = [:]
+    private static var masks: [Key: CGImage] = [:]
 
     /// Draws `glyph` centered in `rect`, in a context with its origin at the top left.
     static func draw(_ glyph: Glyph, in rect: CGRect, color: CGColor, context: CGContext) {
@@ -67,18 +67,22 @@ enum GlyphArt {
     private static func symbolMask(_ glyph: Glyph, side: CGFloat) -> (image: CGImage, size: CGSize)? {
         let key = Key(glyph: glyph, size: (side * 4).rounded() / 4)
         if masks[key] == nil, let name = glyph.symbol {
-            let configuration = NSImage.SymbolConfiguration(pointSize: side, weight: .semibold)
+            // Drawn at the key's size, so the mask does not depend on which side asked first.
+            let configuration = NSImage.SymbolConfiguration(pointSize: key.size, weight: .semibold)
             guard let image = NSImage(systemSymbolName: name, accessibilityDescription: nil)?.withSymbolConfiguration(configuration) else { return nil }
             // Rendered large enough for any screen the panel is on.
             var proposed = CGRect(origin: .zero, size: CGSize(width: image.size.width * 4, height: image.size.height * 4))
             guard let whole = image.cgImage(forProposedRect: &proposed, context: nil, hints: nil), let inked = trimmed(whole) else { return nil }
-            // Symbols come with different margins and proportions; each is cut to its ink
-            // and fitted so its longer side is the box's.
-            let fit = side / CGFloat(max(inked.width, inked.height))
             if masks.count > 200 { masks.removeAll() }
-            masks[key] = (inked, CGSize(width: CGFloat(inked.width) * fit, height: CGFloat(inked.height) * fit))
+            masks[key] = inked
         }
-        return masks[key]
+        guard let inked = masks[key] else { return nil }
+        // Symbols come with different margins and proportions; each is cut to its ink and
+        // fitted so its longer side is the box's. The fit is for this side, not the one
+        // that made the mask: sides a little apart share a mask, and the first must not
+        // decide the size of the others.
+        let fit = side / CGFloat(max(inked.width, inked.height))
+        return (inked, CGSize(width: CGFloat(inked.width) * fit, height: CGFloat(inked.height) * fit))
     }
 
     private static func drawSymbol(_ glyph: Glyph, in rect: CGRect, color: CGColor, context: CGContext) {
