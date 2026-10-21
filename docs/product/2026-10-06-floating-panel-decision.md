@@ -503,11 +503,13 @@ and nothing else. The GPU is a ring" and the GPU's pair of usage and memory abov
 - Cost: sizes changed. The compact layout's second column is wider (the memory row now
   holds the temperature); the detailed layout is wider by the GPU's column.
 
-## Proposal: resize cursors and up to three menu bar readings (2026-10-21, contributor branch, not yet seen by the owner)
+## Resize cursors and up to three menu bar readings (2026-10-21, approved and built)
 
-Built on the branch `feat/resize-cursors-and-menubar-trio` of a contributor's fork, to
-show the owner; nothing here is approved. It extends "The menu bar item: one reading"
-above and rule 9 (resized from any edge).
+Built by a contributor (pull request 26) and approved by the owner after a review of the
+rendered changes: up to three readings is fine as long as the default stays one ("最多显示
+三个是 OK 的，但默认情况下显示一个"), which it is; the "Resize" switch stays beside the
+palettes with that name. It extends "The menu bar item: one reading" above and rule 9
+(resized from any edge).
 
 - Resize cursors. Within 9 pt of an edge inside the panel, in a 20 pt square at a
   corner (at most a quarter and a third of a small panel's shorter side), or in a 6 pt
@@ -550,9 +552,14 @@ above and rule 9 (resized from any edge).
   or off, cannot remove the last one, and dims the rest once three are chosen.
 - The item draws each reading as before (glyph, figure, unit, its own steady room) with
   8 pt between readings, as one picture.
-- Open: whether the switch belongs beside the palettes or in the "More" list; whether
-  the menu should stay open while several readings are picked (a system menu closes
-  after each pick).
+- The "Menu bar shows" row names one reading by its name and several by their glyphs,
+  the menu bar's own, in its order (owner's choice). Three names did not fit in English:
+  the row's value has 132 pt beside the title, and 17 of the 20 combinations of three
+  were cut in the middle. The glyphs are spaced by their ink and their middle is the
+  middle of the value's digits, as in the menu bar; the last one ends where a single
+  name ends, the same distance before the arrow.
+- Still open: whether the menu should stay open while several readings are picked (a
+  system menu closes after each pick).
 
 ## Rejected by the owner (do not reintroduce)
 
