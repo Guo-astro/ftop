@@ -240,6 +240,8 @@ final class ControlFace: NSView {
         let highlight = CALayer()
         let title = CATextLayer()
         let value = CATextLayer()
+        /// Several menu bar readings, as their glyphs before the value's arrow.
+        let glyphs = CALayer()
         var frame = CGRect.zero
         init(_ item: Item) { self.item = item }
     }
@@ -396,7 +398,8 @@ final class ControlFace: NSView {
 
     private func value(_ item: Item) -> String {
         switch item {
-        case .shows: config.menuBarShows.map(ControlPanel.name(of:)).joined(separator: " · ") + "  ›"
+        // Several readings are their glyphs (`placeGlyphs`); three names do not fit in English.
+        case .shows: config.menuBarShows.count > 1 ? "›" : ControlPanel.name(of: config.menuBarShows[0]) + "  ›"
         case .interval: Self.seconds(config.interval) + "  ›"
         case .rows: "\(config.maxProcesses)  ›"
         case .language: Self.name(of: config.language) + "  ›"
@@ -527,6 +530,7 @@ final class ControlFace: NSView {
                 row.value.alignmentMode = .right
                 row.value.frame.origin.x = inner.minX + titleWidth + 12
                 row.value.frame.size.width = inner.width - titleWidth - 12
+                if item == .shows, config.menuBarShows.count > 1 { placeGlyphs(config.menuBarShows, in: row, host: host, scale: scale) }
                 rows.append(row)
             }
         }
@@ -534,7 +538,7 @@ final class ControlFace: NSView {
         paint(animated: false)
         if expanded, !calm {
             for row in rows {
-                for part in [row.title, row.value] {
+                for part in [row.title, row.value, row.glyphs] {
                     let fade = CABasicAnimation(keyPath: "opacity")
                     fade.fromValue = 0
                     fade.duration = PanelStyle.controlAppear
@@ -542,6 +546,36 @@ final class ControlFace: NSView {
                 }
             }
         }
+    }
+
+    /// The menu bar's readings as the menu bar draws their glyphs, ending where a single
+    /// reading's name ends: the same distance before the arrow. The glyphs are spaced by
+    /// their ink, and their middle is the middle of the value's digits, as in the menu bar.
+    private func placeGlyphs(_ metrics: [MenuBarMetric], in row: Row, host: CALayer, scale: CGFloat) {
+        let side = PanelStyle.menuBarGlyph
+        let font = NSFont.systemFont(ofSize: PanelStyle.controlValueSize, weight: .regular)
+        let inks = metrics.map(MenuBarPicture.inkWidth(of:))
+        let width = inks.reduce(0, +) + PanelStyle.controlValueGlyphGap * CGFloat(metrics.count - 1)
+        let end = row.value.frame.maxX - ("  ›" as NSString).size(withAttributes: [.font: font]).width
+        let middle = row.value.frame.minY + font.ascender - font.capHeight / 2
+        // The layer sits on whole points; the glyphs inside it on whole pixels, the way the
+        // menu bar places them: strokes a point and a half wide, a quarter point off the half points.
+        let frame = CGRect(x: floor(end - width) - 1, y: floor(middle - side / 2) - 1, width: ceil(width) + 3, height: side + 3)
+        let half = { (value: CGFloat) in (value * 2).rounded() / 2 }
+        let color = PanelStyle.secondaryColor.cgColor
+        row.glyphs.contents = drawnImage(size: frame.size, scale: scale) { context in
+            var x = end - width - frame.minX
+            let top = half(middle - side / 2 - frame.minY) - 0.25
+            for (metric, ink) in zip(metrics, inks) {
+                let left = x - (side - ink) / 2
+                let box = CGRect(x: half(left - 0.25) + 0.25, y: top, width: side, height: side)
+                GlyphArt.draw(MenuBarPicture.glyph(of: metric), in: box, color: color, context: context)
+                x += ink + PanelStyle.controlValueGlyphGap
+            }
+        }
+        row.glyphs.contentsScale = scale
+        row.glyphs.frame = frame
+        host.addSublayer(row.glyphs)
     }
 
     /// The glyph as a mask: its color is the layer's, so it can change smoothly.
@@ -599,6 +633,7 @@ final class ControlFace: NSView {
                 row.highlight.opacity = hovered == row.item && !idle ? 1 : 0
                 row.title.opacity = idle ? PanelStyle.controlDimOpacity : 1
                 row.value.opacity = idle ? PanelStyle.controlDimOpacity : 1
+                row.glyphs.opacity = row.value.opacity
             }
         }
         CATransaction.commit()

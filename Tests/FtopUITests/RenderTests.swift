@@ -180,8 +180,12 @@ private let demoFrameCount = ProcessInfo.processInfo.environment["FTOP_DEMO_FRAM
                 backdrop.cacheDisplay(in: backdrop.bounds, to: bitmap)
                 try bitmap.representation(using: .png, properties: [:])!.write(to: directory.appending(path: "control-pinned-\(palette.rawValue).png"))
             }
-            for dark in [true, false] {
-                let content = ControlPanel.picture(state, expanded: true)
+            // The open block with the widest three menu bar readings, and the resize switch off.
+            var three = state
+            three.config.menuBarShows = [.memory, .download, .upload]
+            three.config.resizeEdges = false
+            for (name, shown, dark) in [("", state, true), ("", state, false), ("-three", three, false)] {
+                let content = ControlPanel.picture(shown, expanded: true)
                 let window = NSWindow(contentRect: content.frame, styleMask: [.borderless], backing: .buffered, defer: false)
                 window.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
                 let backdrop = NSView(frame: content.frame)
@@ -193,7 +197,7 @@ private let demoFrameCount = ProcessInfo.processInfo.environment["FTOP_DEMO_FRAM
                 let bitmap = try #require(sharpBitmap(for: backdrop))
                 backdrop.cacheDisplay(in: backdrop.bounds, to: bitmap)
                 try bitmap.representation(using: .png, properties: [:])!
-                    .write(to: directory.appending(path: "settings-\(language.rawValue)\(dark ? "-dark" : "").png"))
+                    .write(to: directory.appending(path: "settings-\(language.rawValue)\(name)\(dark ? "-dark" : "").png"))
             }
         }
         Strings.language = .auto

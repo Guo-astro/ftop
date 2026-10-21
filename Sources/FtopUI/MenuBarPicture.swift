@@ -8,7 +8,7 @@ public enum MenuBarPicture {
     private static let numberFont = NSFont.monospacedDigitSystemFont(ofSize: PanelStyle.menuBarNumberSize, weight: .medium)
     private static let unitFont = NSFont.monospacedDigitSystemFont(ofSize: PanelStyle.menuBarUnitSize, weight: .medium)
 
-    private static func glyph(of metric: MenuBarMetric) -> Glyph {
+    static func glyph(of metric: MenuBarMetric) -> Glyph {
         switch metric {
         case .cpu: .cpu
         case .memory: .memory
@@ -58,7 +58,7 @@ public enum MenuBarPicture {
 
     /// The glyph's ink starts at the group's start and the figure a fixed gap after the
     /// ink, whatever the glyph's own width: an arrow is narrower than the chip.
-    private static func inkWidth(of metric: MenuBarMetric) -> CGFloat {
+    static func inkWidth(of metric: MenuBarMetric) -> CGFloat {
         snapped(GlyphArt.inkWidth(glyph(of: metric), side: PanelStyle.menuBarGlyph))
     }
 

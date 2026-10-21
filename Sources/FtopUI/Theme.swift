@@ -160,6 +160,8 @@ public struct PanelStyle: Equatable, Sendable {
     static let controlListGap: CGFloat = 10
     static let controlTitleSize: CGFloat = 13
     static let controlValueSize: CGFloat = 12
+    /// Several menu bar readings are named in their row by their glyphs, this far apart.
+    static let controlValueGlyphGap: CGFloat = 8
     static let controlCorner: CGFloat = 18
     /// The ring around the chosen palette.
     static let controlRingLine: CGFloat = 2
